@@ -1,6 +1,15 @@
 = simple_metar_parser
 
-Description goes here.
+There are two existing libraries for parsing metars:
+
+* ruby-wx - not supported, simple, but hard to maintain now for me;
+
+* metar-parser - too big and "railish", can fetch metars, but had some issues while parsing
+  strings.
+
+... and there was some my piece of code used in HomeIO. This gem is that piece of code
+ready to use in your projects.
+
 
 == Contributing to simple_metar_parser
  

@@ -16,12 +16,16 @@ Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "simple_metar_parser"
   gem.homepage = "http://github.com/akwiatkowski/simple_metar_parser"
-  gem.license = "MIT"
+  gem.license = "LGPLv3"
   gem.summary = %Q{Simple METAR parser}
   gem.description = %Q{Gem for parsing METARs fast and simple.}
   gem.email = "bobikx@poczta.fm"
   gem.authors = ["Aleksander Kwiatkowski"]
   # dependencies defined in Gemfile
+
+  gem.files = FileList[
+    "[A-Z]*", "{bin,generators,lib,test}/**/*"
+  ]
 end
 Jeweler::RubygemsDotOrgTasks.new
 
