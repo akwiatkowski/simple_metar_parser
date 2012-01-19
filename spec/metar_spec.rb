@@ -8,6 +8,23 @@ describe "SimpleMetarParser::Metar" do
     m.raw.should == sample_metar
   end
 
+  it "should get city information using fake AR class" do
+    # fake class
+    class FakeCity
+      def self.find_by_metar(m)
+        return {:city => m}
+      end
+    end
+
+    SimpleMetarParser::Metar.rails_model = FakeCity
+    m = SimpleMetarParser::Parser.parse(sample_metar)
+    m.city_model.should == FakeCity.find_by_metar('LBBG')
+
+    SimpleMetarParser::Metar.rails_model = nil
+    m = SimpleMetarParser::Parser.parse(sample_metar)
+    m.city_model.should == nil
+  end
+
   it "change time range" do
     time_range = SimpleMetarParser::Metar::DEFAULT_TIME_INTERVAL
     m = SimpleMetarParser::Parser.parse(sample_metar)
