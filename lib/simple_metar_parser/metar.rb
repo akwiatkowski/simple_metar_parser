@@ -1,29 +1,32 @@
 module SimpleMetarParser
   class Metar
 
-    def initialize(_raw)
+    DEFAULT_TIME_INTERVAL = 30 * 60
+
+    def initialize(_raw, _options = { })
       @raw = _raw
+      @options = _options
+      @time_interval = @options[:time_interval] || DEFAULT_TIME_INTERVAL
     end
 
+    # Raw metar string
     attr_reader :raw
 
-# Raw metar string
-    def raw
-      @metar_string.to_s_fix_utf
-    end
+    # Time "from"
+    attr_reader :time
+    alias :time_from :time
 
-# Raw metar string
-    attr_reader :metar_string
+    # Interval of one metar
+    attr_reader :time_interval
 
-# Begin of time period
-    def time_from
-      @output[:time]
-    end
-
-# End of time period
+    # End of time period
     def time_to
-      @output[:time] + TIME_INTERVAL
+      self.time_from + self.time_interval
     end
+
+    # ---------------------
+
+
 
 # Temperature
     def temperature
@@ -122,10 +125,6 @@ module SimpleMetarParser
 # default metar time interval
     TIME_INTERVAL = 30*60
 
-# New metar code
-    def initialize
-      clear
-    end
 
 # Clear data before processing
     def clear
