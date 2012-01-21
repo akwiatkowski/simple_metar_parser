@@ -23,9 +23,12 @@ module SimpleMetarParser
         :wind => Wind.new(self)
       }
 
+      # Create dynamically accessors
       @modules.each_key do |k|
         self.instance_variable_set("@#{k}".to_sym, @modules[k])
-        self.class.class_eval{"attr_reader :#{k}"}
+        self.class.send :define_method, k do
+          instance_variable_get( "@" + k.to_s )
+        end
       end
 
       reset
@@ -45,8 +48,6 @@ module SimpleMetarParser
     def post_process
       @wind.post_process
     end
-
-    attr_reader :wind
 
     # Raw metar string
     attr_reader :raw
