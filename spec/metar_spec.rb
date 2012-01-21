@@ -28,12 +28,14 @@ describe "SimpleMetarParser::Metar" do
   it "change time range" do
     time_range = SimpleMetarParser::Metar::DEFAULT_TIME_INTERVAL
     m = SimpleMetarParser::Parser.parse(sample_metar)
-    m.time_interval.should == time_range
+    m.time.time_interval.should == time_range
     m.time_from.should == m.time_to - time_range
+    m.time.time_from.should == m.time.time_from
+    m.time.time_to.should == m.time.time_to
 
     time_range = 3600
     m = SimpleMetarParser::Parser.parse(sample_metar, {:time_interval => time_range})
-    m.time_interval.should == time_range
+    m.time.time_interval.should == time_range
     m.time_from.should == m.time_to - time_range
   end
 

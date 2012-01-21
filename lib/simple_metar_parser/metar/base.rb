@@ -6,6 +6,8 @@ module SimpleMetarParser
       reset
     end
 
+    attr_reader :parent
+
     def reset
       # implement
     end

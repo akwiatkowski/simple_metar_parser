@@ -2,6 +2,7 @@ $:.unshift(File.dirname(__FILE__))
 
 require 'metar/base'
 require 'metar/wind'
+require 'metar/metar_time'
 
 module SimpleMetarParser
   class Metar
@@ -13,21 +14,22 @@ module SimpleMetarParser
       @raw_splits = @raw.split(' ')
 
       @options = _options
-      @time_interval = _options[:time_interval] || DEFAULT_TIME_INTERVAL
+      @options[:time_interval] = _options[:time_interval] || DEFAULT_TIME_INTERVAL
       @year = _options[:year] || Time.now.utc.year
       @month = _options[:month] || Time.now.utc.month
       # metar city code
       @city = _options[:city]
 
       @modules = {
-        :wind => Wind.new(self)
+        :wind => Wind.new(self),
+        :time => MetarTime.new(self)
       }
 
       # Create dynamically accessors
       @modules.each_key do |k|
         self.instance_variable_set("@#{k}".to_sym, @modules[k])
         self.class.send :define_method, k do
-          instance_variable_get( "@" + k.to_s )
+          instance_variable_get("@" + k.to_s)
         end
       end
 
@@ -35,6 +37,10 @@ module SimpleMetarParser
       decode
       post_process
 
+    end
+
+    def modules
+      @modules.values
     end
 
     attr_reader :year, :month
@@ -58,17 +64,6 @@ module SimpleMetarParser
     # Initial options
     attr_reader :options
 
-    # Time "from"
-    attr_reader :time
-    alias :time_from :time
-
-    # Interval of one metar
-    attr_reader :time_interval
-
-    # End of time period
-    def time_to
-      self.time_from + self.time_interval
-    end
 
     # Metar code of city
     attr_reader :city
@@ -107,10 +102,11 @@ module SimpleMetarParser
 
     # Check if current split has proper information and store them inside
     def decode_split(split)
-      decode_city(split)
-      decode_time(split)
+      self.modules.each do |m|
+        m.decode_split(split)
+      end
 
-      @wind.decode_split(split)
+      decode_city(split)
 
       #decode_wind_variable(split)
       #decode_temperature(split)
@@ -121,12 +117,6 @@ module SimpleMetarParser
       #check_cavok(split)
     end
 
-    # Decode time
-    def decode_time(s)
-      if s =~ /(\d{2})(\d{2})(\d{2})Z/
-        @time = Time.utc(self.year, self.month, $1.to_i, $2.to_i, $3.to_i, 0, 0)
-      end
-    end
 
     # City. Information about city is at the begin
     def decode_city(s)
@@ -139,6 +129,13 @@ module SimpleMetarParser
     # Addition city information fetched using AR
     attr_reader :city_model
 
+    def time_from
+      self.time.time_from
+    end
+
+    def time_to
+      self.time.time_to
+    end
 
   end
 end
