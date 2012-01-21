@@ -51,8 +51,9 @@ describe "SimpleMetarParser::Metar" do
 
     m.city.should == "LBBG"
 
-    m.wind_direction.should == 120
-    m.wind_speed.should == 3
+    m.wind.should be_kind_of(SimpleMetarParser::Wind)
+    m.wind.wind_direction.should == 120
+    m.wind.wind_speed.should == 3
 
     
 
