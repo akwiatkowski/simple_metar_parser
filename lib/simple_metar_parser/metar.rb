@@ -14,6 +14,9 @@ module SimpleMetarParser
       # metar city code
       @city = _options[:city]
 
+      @winds = Array.new
+      @winds_variable_directions = Array.new
+
       decode
     end
 
@@ -41,7 +44,6 @@ module SimpleMetarParser
     # Metar code of city
     attr_reader :city
 
-
     # You can set AR model for fetching additional information about city
     def self.rails_model=(klass)
       @@rails_model_class = klass
@@ -52,7 +54,7 @@ module SimpleMetarParser
       return nil if not defined? @@rails_model_class or @@rails_model_class.nil?
       @@rails_model_class.find_by_metar(metar)
     end
-    
+
     # Decode all string fragments
     def decode
       self.raw_splits.each do |split|
@@ -60,6 +62,8 @@ module SimpleMetarParser
       end
 
       # one time last processes
+      recalculate_winds
+
       #calculate_humidity
       #calculate_cloud
       #calculate_rain_and_snow
@@ -76,8 +80,8 @@ module SimpleMetarParser
     def decode_split(split)
       decode_city(split)
       decode_time(split)
-      #decode_wind(split)
-      #decode_wind_variable(split)
+      decode_wind(split)
+      decode_wind_variable(split)
       #decode_temperature(split)
       #decode_pressure(split)
       #decode_visibility(split)
@@ -104,6 +108,108 @@ module SimpleMetarParser
     # Addition city information fetched using AR
     attr_reader :city_model
 
+    KNOTS_TO_METERS_PER_SECOND = 1.85 / 3.6
+    KILOMETERS_PER_HOUR_TO_METERS_PER_SECOND = 1.0 / 3.6
+
+    # Wind parameters in meters per second
+    def decode_wind(s)
+
+      if s =~ /(\d{3})(\d{2})G?(\d{2})?(KT|MPS|KMH)/
+        # different units
+        wind = case $4
+                 when "KT" then
+                   $2.to_f * KNOTS_TO_METERS_PER_SECOND
+                 when "MPS" then
+                   $2.to_f
+                 when "KMH" then
+                   $2.to_f * KILOMETERS_PER_HOUR_TO_METERS_PER_SECOND
+                 else
+                   nil
+               end
+
+        wind_max = case $4
+                     when "KT" then
+                       $3.to_f * KNOTS_TO_METERS_PER_SECOND
+                     when "MPS" then
+                       $3.to_f
+                     when "KMH" then
+                       $3.to_f * KILOMETERS_PER_HOUR_TO_METERS_PER_SECOND
+                     else
+                       nil
+                   end
+
+        # wind_max is not less than normal wind
+        if wind_max < wind or wind_max.nil?
+          wind_max = wind
+        end
+
+        @winds << {
+          :wind => wind,
+          :wind_max => wind_max,
+          :wind_direction => $1.to_i
+        }
+      end
+
+      # variable/unknown direction
+      if s =~ /VRB(\d{2})(KT|MPS|KMH)/
+        wind = case $2
+                 when "KT" then
+                   $1.to_f * KNOTS_TO_METERS_PER_SECOND
+                 when "MPS" then
+                   $1.to_f
+                 when "KMH" then
+                   $1.to_f * KILOMETERS_PER_HOUR_TO_METERS_PER_SECOND
+                 else
+                   nil
+               end
+
+        @winds << {
+          :wind => wind
+        }
+
+      end
+    end
+
+    # Variable wind direction
+    def decode_wind_variable(s)
+      if s =~ /(\d{3})V(\d{3})/
+        @winds_variable_directions << {
+          :wind_variable_direction_from => $1.to_i,
+          :wind_variable_direction_to => $2.to_i,
+          :wind_direction => ($1.to_i + $2.to_i) / 2,
+          :wind_variable => true
+        }
+      end
+    end
+
+    # Calculate wind parameters, some metar string has multiple winds recorded
+    def recalculate_winds
+      @wind = @winds.collect { |w| w[:wind] }.inject(0) { |b, i| b + i } / @winds.size
+      if @winds.size == 1
+        @wind_direction = @winds.first[:wind_direction]
+      else
+        @wind_direction = nil
+      end
+    end
+
+    # Wind speed in meters per second
+    attr_reader :wind
+    alias_method :wind_speed, :wind
+
+    # Direction of wind
+    attr_reader :wind_direction
+
+    # Wind speed in knots
+    def wind_speed_knots
+      return self.wind / KNOTS_TO_METERS_PER_SECOND
+    end
+
+    # Wind speed in KM/H
+    def wind_speed_kmh
+      return self.wind / KILOMETERS_PER_HOUR_TO_METERS_PER_SECOND
+    end
+
+
     # ---------------------
 
 
@@ -115,11 +221,6 @@ module SimpleMetarParser
 # Pressure in hPa
     def pressure
       @output[:pressure]
-    end
-
-# Wind in m/s
-    def wind
-      @output[:wind]
     end
 
 # Snow amount in internal unit based on specials
@@ -219,34 +320,6 @@ module SimpleMetarParser
       @city_hash = Hash.new
     end
 
-# Process metar string which was not downloaded
-    def process_archived(string, year, month)
-      process(string, year, month, :archived)
-    end
-
-
-# Process metar string in newly created MetarCode instance
-    def self.process(string, year, month, type)
-      mc = self.new
-      mc.process(string, year, month, type)
-      return mc
-    end
-
-# Process non-fresh metar string
-    def self.process_archived(string, year, month)
-      self.process(string, year, month, :archived)
-    end
-
-# Process array of metar strings
-    def self.process_array(array, year, month, type)
-      oa = Array.new
-      array.each do |a|
-        mc = process(a, year, month, type)
-        oa << mc
-      end
-      return oa
-    end
-
 # If metar string is valid, processed ok with basic data, and time was correct
     def valid?
       if TYPE_ARCHIVED == @type
@@ -311,95 +384,6 @@ module SimpleMetarParser
 
     private
 
-
-# Wind parameters in meters per second
-    def decode_wind(s)
-      if s =~ /(\d{3})(\d{2})G?(\d{2})?(KT|MPS|KMH)/
-        # different units
-        wind = case $4
-                 when "KT" then
-                   $2.to_f * 1.85 / 3.6
-                 when "MPS" then
-                   $2.to_f * 1.6 / 3.6
-                 when "KMH" then
-                   $2.to_f / 3.6
-                 else
-                   nil
-               end
-
-        wind_max = case $4
-                     when "KT" then
-                       $3.to_f * 1.85 / 3.6
-                     when "MPS" then
-                       $3.to_f * 1.6 / 3.6
-                     when "KMH" then
-                       $3.to_f / 3.6
-                     else
-                       nil
-                   end
-
-        # wind_max is not less than normal wind
-        if wind_max < wind or wind_max.nil?
-          wind_max = wind
-        end
-
-        # additional wind data
-        if not @output[:wind].nil?
-          if @output[:wind_additional].nil?
-            @output[:wind_additional] = Array.new
-          end
-
-          @output[:wind_additional] << {
-            :wind => wind,
-            :wind_max => wind_max,
-            :wind_direction => $1.to_i
-          }
-        else
-          @output[:wind] = wind
-          @output[:wind_max] = wind_max
-          @output[:wind_direction] = $1.to_i
-        end
-      end
-
-      # variable/unknown direction
-      if s =~ /VRB(\d{2})(KT|MPS|KMH)/
-        wind = case $2
-                 when "KT" then
-                   $1.to_f * 1.85 / 3.6
-                 when "MPS" then
-                   $1.to_f * 1.6/ 3.6
-                 when "KMH" then
-                   $1.to_f/ 3.6
-                 else
-                   nil
-               end
-
-        # additional wind data
-        if not @output[:wind].nil?
-          if @output[:wind_additional].nil?
-            @output[:wind_additional] = Array.new
-          end
-
-          @output[:wind_additional] << {
-            :wind => wind,
-            :wind_max => wind_max,
-            :wind_direction => $1.to_i
-          }
-        else
-          @output[:wind] = wind
-          @output[:wind_max] = wind_max
-          @output[:wind_direction] = $1.to_i
-        end
-      end
-    end
-
-# Variable wind direction
-    def decode_wind_variable(s)
-      if s =~ /(\d{3})V(\d{3})/
-        @output[:wind_variable_direction_from] = $1.to_i
-        @output[:wind_variable_direction_to] = $2.to_i
-      end
-    end
 
 # Temperature in Celsius degrees
     def decode_temperature(s)
