@@ -63,6 +63,11 @@ module SimpleMetarParser
 
         @clouds.uniq!
       end
+
+      if s =~ /^(CAVOK)$/
+        # everything is awesome :)
+      end
+
     end
 
     # Calculate numeric description of clouds

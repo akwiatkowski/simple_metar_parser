@@ -61,6 +61,7 @@ describe "SimpleMetarParser::Metar" do
     m.temperature.should be_kind_of(SimpleMetarParser::Temperature)
     m.temperature.temperature.should == -4
     m.temperature.dew.should == -7
+    m.temperature.humidity.should == 80
 
     m.pressure.should be_kind_of(SimpleMetarParser::Pressure)
     m.pressure.pressure.should == 1020
@@ -94,6 +95,7 @@ describe "SimpleMetarParser::Metar" do
 
     m.temperature.temperature.should == -2
     m.temperature.dew.should == -2
+    m.temperature.humidity.should == 100
 
     m.pressure.pressure.should == 1018
 

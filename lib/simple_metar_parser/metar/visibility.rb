@@ -36,6 +36,10 @@ module SimpleMetarParser
       if @visibility.to_i >= NEARLY_MAX_VISIBILITY
         @visibility = MAX_VISIBILITY
       end
+
+      if s =~ /^(CAVOK)$/
+        @visibility = MAX_VISIBILITY
+      end
     end
   end
 
