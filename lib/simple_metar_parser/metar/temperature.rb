@@ -5,10 +5,10 @@ module SimpleMetarParser
 
     def reset
       @temperature = nil
-      @temperature_dew = nil
+      @dew = nil
     end
 
-    attr_reader :temperature, :temperature_dew
+    attr_reader :temperature, :dew
 
     def decode_split(s)
       # Temperature in Celsius degrees
@@ -20,9 +20,9 @@ module SimpleMetarParser
         end
 
         if $3 == "M"
-          @temperature_dew = -1.0 * $4.to_f
+          @dew = -1.0 * $4.to_f
         else
-          @temperature_dew = $4.to_f
+          @dew = $4.to_f
         end
 
         return

@@ -1,66 +1,3 @@
-# ---------------------
-
-
-# Temperature
-def temperature
-  @output[:temperature]
-end
-
-# Pressure in hPa
-def pressure
-  @output[:pressure]
-end
-
-# Snow amount in internal unit based on specials
-def snow_metar
-  @output[:snow_metar]
-end
-
-# Snow amount in read world units - mm (probably per m^2)
-def snow
-  @output[:snow]
-end
-
-# Snow amount in internal unit based on specials
-def rain_metar
-  @output[:rain_metar]
-end
-
-# Rain amount in read world units - mm (probably per m^2)
-def rain
-  @output[:rain]
-end
-
-# Visibility
-def visibility
-  @output[:visibility]
-end
-
-# City id
-def city_id
-  @city_id || @city_hash[:id]
-end
-
-# City name
-attr_reader :city
-
-# Country
-attr_reader :city_country
-
-# City Metar code
-def city_metar
-  @city_metar
-end
-
-# Processed data in Hash
-attr_reader :output
-# Processed data in Hash
-alias_method :to_hash, :output
-
-# Metar string was not downloaded
-TYPE_ARCHIVED = :archived
-# Metar string was just downloaded
-TYPE_FRESH = :fresh
 # Cloud level - clear sky
 CLOUD_CLEAR = (0 * 100.0 / 8.0).round
 # Cloud level - few clouds
@@ -74,24 +11,11 @@ CLOUD_OVERCAST = (8 * 100.0 / 8.0).round
 #Cloud level - not significant
 CLOUD_NOT_SIGN = (0.5 * 100.0 / 8.0).round
 
-
-# Year
-attr_reader :year
-
-# Month
-attr_reader :month
-
-# Type from where come this metar, ex: :archived, :fresh
-attr_reader :type
-
 # max visibility
 MAX_VISIBILITY = 10_000
 
 # If visibility is greater than this it assume it is maximum
 NEARLY_MAX_VISIBILITY = 9_500
-
-# default metar time interval
-TIME_INTERVAL = 30*60
 
 
 # If metar string is valid, processed ok with basic data, and time was correct
@@ -121,86 +45,8 @@ def valid?
   return false
 end
 
-# Enforce store
-def store
-  # send self to Storage
-  Storage.instance.store(self) if valid?
-end
-
-# Convert decoded METAR to hash object prepared to store in DB. Not used by ActiveRecord storage engine.
-def to_db_data
-  return {
-    :data => {
-      :created_at => Time.now.to_i,
-      :time_from => self.time_from,
-      :time_to => self.time_to,
-      :temperature => self.temperature,
-      :pressure => self.pressure,
-      :wind => self.wind,
-      :snow_metar => self.snow_metar,
-      :snow => self.snow,
-      :rain_metar => self.rain_metar,
-      :rain => self.rain,
-      :provider => "'METAR'",
-      # escaping slashes
-      #:raw => "'#{@metar_string.gsub(/\'/,"\\\\"+'\'')}'",
-      :raw => "'#{self.raw}'",
-      :city_id => @city_id,
-      :city => "'#{@city}'",
-      :city_hash => @city_hash
-    },
-    :columns => [
-      :created_at, :time_from, :time_to, :temperature, :pressure, :wind,
-      :snow_metar, :rain_metar, :city_id, :raw
-    ]
-  }
-end
-
-private
 
 
-# Temperature in Celsius degrees
-def decode_temperature(s)
-  if s =~ /^(M?)(\d{2})\/(M?)(\d{2})$/
-    if $1 == "M"
-      @output[:temperature] = -1.0 * $2.to_f
-    else
-      @output[:temperature] = $2.to_f
-    end
-
-    if $3 == "M"
-      @output[:temperature_dew] = -1.0 * $4.to_f
-    else
-      @output[:temperature_dew] = $4.to_f
-    end
-
-    return
-  end
-
-  # shorter version
-  if s =~ /^(M?)(\d{2})\/$/
-    if $1 == "M"
-      @output[:temperature] = -1.0 * $2.to_f
-    else
-      @output[:temperature] = $2.to_f
-    end
-
-    return
-  end
-end
-
-# Pressure in hPa
-def decode_pressure(s)
-  # Europe
-  if s =~ /Q(\d{4})/
-    @output[:pressure] = $1.to_i
-  end
-  # US
-  if s =~ /A(\d{4})/
-    #1013 hPa = 29.921 inNg
-    @output[:pressure]=(($1.to_f)*1013.0/2992.1).round
-  end
-end
 
 # Visibility in meters
 def decode_visibility(s)

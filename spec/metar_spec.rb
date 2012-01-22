@@ -39,28 +39,55 @@ describe "SimpleMetarParser::Metar" do
     m.time_from.should == m.time_to - time_range
   end
 
-  it "decode metar string" do
+  it "decode metar string (1)" do
     # http://www.metarreader.com/
     
     metar_string = "LBBG 041600Z 12003MPS 310V290 1400 R04/P1500N R22/P1500U +SN BKN022 OVC050 M04/M07 Q1020 NOSIG 9949//91="
 
-    m = SimpleMetarParser::Parser.parse(sample_metar)
+    m = SimpleMetarParser::Parser.parse(metar_string)
     m.time_from.utc.day.should == 4
     m.time_from.utc.hour.should == 16
     m.time_from.utc.min.should == 0
 
     (m.time_to - m.time_from).should == 30*60
 
+    m.city.should be_kind_of(SimpleMetarParser::MetarCity)
     m.city.code == "LBBG"
 
     m.wind.should be_kind_of(SimpleMetarParser::Wind)
     m.wind.wind_direction.should == 120
     m.wind.wind_speed.should == 3
 
+    m.temperature.should be_kind_of(SimpleMetarParser::Temperature)
     m.temperature.temperature.should == -4
+    m.temperature.dew.should == -7
 
-    
+    m.pressure.should be_kind_of(SimpleMetarParser::Pressure)
+    m.pressure.pressure.should == 1020
+  end
 
+  it "decode metar string (1)" do
+    # http://www.metarreader.com/
+
+    metar_string = "KTTN 051853Z 04011KT 1/2SM VCTS SN FZFG BKN003 OVC010 M02/M02 A3006 RMK AO2 TSB40 SLP176 P0002 T10171017="
+
+    m = SimpleMetarParser::Parser.parse(metar_string)
+    m.time_from.utc.day.should == 5
+    m.time_from.utc.hour.should == 18
+    m.time_from.utc.min.should == 53
+
+    (m.time_to - m.time_from).should == 30*60
+
+    m.city.code == "KTTN"
+
+    m.wind.should be_kind_of(SimpleMetarParser::Wind)
+    m.wind.wind_direction.should == 40
+    m.wind.wind_speed_knots.should == 11
+
+    m.temperature.temperature.should == -2
+    m.temperature.dew.should == -2
+
+    m.pressure.pressure.should == 1018
   end
 
 end
