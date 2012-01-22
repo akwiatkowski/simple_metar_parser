@@ -18,11 +18,11 @@ describe "SimpleMetarParser::Metar" do
 
     SimpleMetarParser::Metar.rails_model = FakeCity
     m = SimpleMetarParser::Parser.parse(sample_metar)
-    m.city_model.should == FakeCity.find_by_metar('LBBG')
+    m.city.model.should == FakeCity.find_by_metar('LBBG')
 
     SimpleMetarParser::Metar.rails_model = nil
     m = SimpleMetarParser::Parser.parse(sample_metar)
-    m.city_model.should == nil
+    m.city.model.should == nil
   end
 
   it "change time range" do
@@ -51,7 +51,7 @@ describe "SimpleMetarParser::Metar" do
 
     (m.time_to - m.time_from).should == 30*60
 
-    m.city.should == "LBBG"
+    m.city.code == "LBBG"
 
     m.wind.should be_kind_of(SimpleMetarParser::Wind)
     m.wind.wind_direction.should == 120
