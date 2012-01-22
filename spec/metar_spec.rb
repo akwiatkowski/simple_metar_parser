@@ -57,6 +57,8 @@ describe "SimpleMetarParser::Metar" do
     m.wind.wind_direction.should == 120
     m.wind.wind_speed.should == 3
 
+    m.temperature.temperature.should == -4
+
     
 
   end
