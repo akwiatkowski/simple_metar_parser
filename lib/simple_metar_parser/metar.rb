@@ -6,6 +6,7 @@ require 'metar/metar_time'
 require 'metar/metar_city'
 require 'metar/temperature'
 require 'metar/pressure'
+require 'metar/visibility'
 
 module SimpleMetarParser
   class Metar
@@ -28,7 +29,8 @@ module SimpleMetarParser
         :time => MetarTime.new(self),
         :city => MetarCity.new(self),
         :temperature => Temperature.new(self),
-        :pressure => Pressure.new(self)
+        :pressure => Pressure.new(self),
+        :visibility => Visibility.new(self)
       }
 
       # Create dynamically accessors

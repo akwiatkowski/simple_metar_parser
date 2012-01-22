@@ -64,6 +64,9 @@ describe "SimpleMetarParser::Metar" do
 
     m.pressure.should be_kind_of(SimpleMetarParser::Pressure)
     m.pressure.pressure.should == 1020
+
+    m.visibility.should be_kind_of(SimpleMetarParser::Visibility)
+    m.visibility.visibility.should == 1400
   end
 
   it "decode metar string (1)" do
@@ -88,6 +91,9 @@ describe "SimpleMetarParser::Metar" do
     m.temperature.dew.should == -2
 
     m.pressure.pressure.should == 1018
+
+    # http://www.flightutilities.com/MRonline.aspx
+    m.visibility.visibility.should == 800
   end
 
 end

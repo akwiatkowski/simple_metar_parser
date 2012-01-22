@@ -11,11 +11,7 @@ CLOUD_OVERCAST = (8 * 100.0 / 8.0).round
 #Cloud level - not significant
 CLOUD_NOT_SIGN = (0.5 * 100.0 / 8.0).round
 
-# max visibility
-MAX_VISIBILITY = 10_000
 
-# If visibility is greater than this it assume it is maximum
-NEARLY_MAX_VISIBILITY = 9_500
 
 
 # If metar string is valid, processed ok with basic data, and time was correct
@@ -48,27 +44,7 @@ end
 
 
 
-# Visibility in meters
-def decode_visibility(s)
-  # Europa
-  if s =~ /^(\d{4})$/
-    @output[:visibility] = $1.to_i
-  end
 
-  # US
-  if s =~ /^(\d{1,3})\/?(\d{0,2})SM$/
-    if $2 == ""
-      @output[:visibility] = $1.to_i * 1600.0
-    else
-      @output[:visibility] = $1.to_f * 1600.0 / $2.to_f
-    end
-  end
-
-  # constant max value
-  if @output[:visibility].to_i >= NEARLY_MAX_VISIBILITY
-    @output[:visibility] = MAX_VISIBILITY
-  end
-end
 
 # Cloudiness
 def decode_clouds(s)
