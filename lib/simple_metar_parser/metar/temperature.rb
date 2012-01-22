@@ -8,7 +8,20 @@ module SimpleMetarParser
       @dew = nil
     end
 
-    attr_reader :temperature, :dew, :humidity
+    # Temperature in C
+    attr_reader :temperature
+
+    # Dew temperature
+    attr_reader :dew
+
+    # Relative humidity
+    attr_reader :humidity
+
+    # Wind chill index
+    attr_reader :wind_chill
+
+    # US Wind chill index
+    attr_reader :wind_chill_us
 
     def decode_split(s)
       # Temperature in Celsius degrees
@@ -41,6 +54,11 @@ module SimpleMetarParser
     end
 
     def post_process
+      calculate_humidity
+      calculate_wind_chill
+    end
+
+    def calculate_humidity
       # Calculate relative humidity
       return if self.temperature.nil? or self.dew.nil?
 
@@ -58,6 +76,22 @@ module SimpleMetarParser
       rh = 100 * e/es
 
       @humidity = rh.round
+    end
+
+    def calculate_wind_chill
+      return if self.temperature.nil? or self.parent.wind.wind_speed.nil?
+      return if self.temperature > 10 or self.parent.wind.wind_speed_kmh < 4.8
+
+      # http://en.wikipedia.org/wiki/Wind_chill
+      v = self.parent.wind.wind_speed
+      ta = self.temperature
+
+      @wind_chill_us = 13.12 +
+        0.6215 * ta -
+        11.37 * v +
+        0.3965 * ta * v
+
+      @wind_chill = (10.0 * Math.sqrt(v) - v + 10.5)*(33.0 - ta)
     end
   end
 

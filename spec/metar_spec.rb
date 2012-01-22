@@ -57,11 +57,13 @@ describe "SimpleMetarParser::Metar" do
     m.wind.should be_kind_of(SimpleMetarParser::Wind)
     m.wind.wind_direction.should == 120
     m.wind.wind_speed.should == 3
+    m.wind.wind_speed_kmh.should be_within(0.05).of(3 * 3.6)
 
     m.temperature.should be_kind_of(SimpleMetarParser::Temperature)
     m.temperature.temperature.should == -4
     m.temperature.dew.should == -7
     m.temperature.humidity.should == 80
+    # m.temperature.wind_chill.should == -8 # ?
 
     m.pressure.should be_kind_of(SimpleMetarParser::Pressure)
     m.pressure.pressure.should == 1020
@@ -96,6 +98,7 @@ describe "SimpleMetarParser::Metar" do
     m.temperature.temperature.should == -2
     m.temperature.dew.should == -2
     m.temperature.humidity.should == 100
+    #m.temperature.wind_chill.should == -8 # ?
 
     m.pressure.pressure.should == 1018
 
