@@ -75,6 +75,10 @@ describe "SimpleMetarParser::Metar" do
     m.clouds.clouds.should be_kind_of(Array)
     m.clouds.clouds.size.should == 2
     m.clouds.clouds_max.should == 100
+
+    m.specials.should be_kind_of(SimpleMetarParser::MetarSpecials)
+    m.specials.specials.should be_kind_of(Array)
+    m.specials.specials.size.should == 1
   end
 
   it "decode metar string (1)" do
@@ -107,6 +111,8 @@ describe "SimpleMetarParser::Metar" do
 
     m.clouds.clouds.size.should == 2
     m.clouds.clouds_max.should == 100
+
+    m.specials.specials.size.should == 3
   end
 
 end
