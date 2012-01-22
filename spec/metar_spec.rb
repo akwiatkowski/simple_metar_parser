@@ -115,4 +115,22 @@ describe "SimpleMetarParser::Metar" do
     m.specials.specials.size.should == 3
   end
 
+  it "calculate snow amount using some weird algorithm" do
+    metar_string = "KTTN 051853Z 04011KT 1/2SM VCTS SN FZFG BKN003 OVC010 M02/M02 A3006 RMK AO2 TSB40 SLP176 P0002 T10171017="
+    m = SimpleMetarParser::Parser.parse(metar_string)
+    snow_normal = m.specials.snow_metar
+
+    metar_string = "KTTN 051853Z 04011KT 1/2SM VCTS -SN FZFG BKN003 OVC010 M02/M02 A3006 RMK AO2 TSB40 SLP176 P0002 T10171017="
+    m = SimpleMetarParser::Parser.parse(metar_string)
+    snow_light = m.specials.snow_metar
+
+    metar_string = "KTTN 051853Z 04011KT 1/2SM VCTS +SN FZFG BKN003 OVC010 M02/M02 A3006 RMK AO2 TSB40 SLP176 P0002 T10171017="
+    m = SimpleMetarParser::Parser.parse(metar_string)
+    snow_heavy = m.specials.snow_metar
+
+    snow_normal.should > snow_light
+    snow_heavy.should > snow_normal
+
+  end
+
 end
