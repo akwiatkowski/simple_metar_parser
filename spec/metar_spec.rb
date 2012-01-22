@@ -67,6 +67,11 @@ describe "SimpleMetarParser::Metar" do
 
     m.visibility.should be_kind_of(SimpleMetarParser::Visibility)
     m.visibility.visibility.should == 1400
+
+    m.clouds.should be_kind_of(SimpleMetarParser::Clouds)
+    m.clouds.clouds.should be_kind_of(Array)
+    m.clouds.clouds.size.should == 2
+    m.clouds.clouds_max.should == 100
   end
 
   it "decode metar string (1)" do
@@ -94,6 +99,9 @@ describe "SimpleMetarParser::Metar" do
 
     # http://www.flightutilities.com/MRonline.aspx
     m.visibility.visibility.should == 800
+
+    m.clouds.clouds.size.should == 2
+    m.clouds.clouds_max.should == 100
   end
 
 end

@@ -7,6 +7,7 @@ require 'metar/metar_city'
 require 'metar/temperature'
 require 'metar/pressure'
 require 'metar/visibility'
+require 'metar/clouds'
 
 module SimpleMetarParser
   class Metar
@@ -30,7 +31,8 @@ module SimpleMetarParser
         :city => MetarCity.new(self),
         :temperature => Temperature.new(self),
         :pressure => Pressure.new(self),
-        :visibility => Visibility.new(self)
+        :visibility => Visibility.new(self),
+        :clouds => Clouds.new(self)
       }
 
       # Create dynamically accessors
@@ -79,7 +81,9 @@ module SimpleMetarParser
     end
 
     def post_process
-      @wind.post_process
+      self.modules.each do |m|
+        m.post_process
+      end
     end
 
     # Additional accessors

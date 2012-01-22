@@ -1,18 +1,3 @@
-# Cloud level - clear sky
-CLOUD_CLEAR = (0 * 100.0 / 8.0).round
-# Cloud level - few clouds
-CLOUD_FEW = (1.5 * 100.0 / 8.0).round
-#Cloud level - scattered
-CLOUD_SCATTERED = (3.5 * 100.0 / 8.0).round
-#Cloud level - broken
-CLOUD_BROKEN = (6 * 100.0 / 8.0).round
-#Cloud level - overcast
-CLOUD_OVERCAST = (8 * 100.0 / 8.0).round
-#Cloud level - not significant
-CLOUD_NOT_SIGN = (0.5 * 100.0 / 8.0).round
-
-
-
 
 # If metar string is valid, processed ok with basic data, and time was correct
 def valid?
@@ -46,57 +31,7 @@ end
 
 
 
-# Cloudiness
-def decode_clouds(s)
 
-  if s =~ /^(SKC|FEW|SCT|BKN|OVC|NSC)(\d{3}?)$/
-    cl = case $1
-           when "SKC" then
-             CLOUD_CLEAR
-           when "FEW" then
-             CLOUD_FEW
-           when "SCT" then
-             CLOUD_SCATTERED
-           when "BKN" then
-             CLOUD_BROKEN
-           when "OVC" then
-             CLOUD_OVERCAST
-           when "NSC" then
-             CLOUD_NOT_SIGN
-           else
-             CLOUD_CLEAR
-         end
-
-    cloud = {
-      :coverage => cl
-    }
-    # optionally cloud bottom
-    unless '' == $2.to_s
-      cloud[:bottom] = $2.to_i * 30
-    end
-
-    @output[:clouds] << cloud
-    @output[:clouds].uniq!
-  end
-
-  # obscured by clouds, vertical visibility
-  if s =~ /^(VV)(\d{3}?)$/
-    @output[:clouds] << {
-      :coverage => CLOUD_OVERCAST,
-      :vertical_visibility => $2.to_i * 30
-    }
-
-    @output[:clouds].uniq!
-  end
-end
-
-# Calculate numeric description of clouds
-def calculate_cloud
-  @output[:cloudiness] = 0
-  @output[:clouds].each do |c|
-    @output[:cloudiness] = c[:coverage] if @output[:cloudiness] < c[:coverage]
-  end
-end
 
 # CAVOK - clouds and visibility ok
 def check_cavok(s)
