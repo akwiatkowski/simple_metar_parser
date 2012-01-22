@@ -28,21 +28,6 @@ end
 
 
 
-
-def decode_other(s)
-  if s.strip == 'AO1'
-    @output[:station] = :auto_without_precipitation
-  elsif s.strip == 'A02'
-    @output[:station] = :auto_with_precipitation
-  end
-
-  # fully automated station
-  if s.strip == 'AUTO'
-    @output[:station_auto] = true
-  end
-
-end
-
 # Decode runway data. Not yet implemented.
 def decode_runway(s)
   # BIAR 130700Z 17003KT 0350 R01/0900V1500U +SN VV001 M04/M04 Q0996

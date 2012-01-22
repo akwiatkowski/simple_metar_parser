@@ -79,6 +79,9 @@ describe "SimpleMetarParser::Metar" do
     m.specials.should be_kind_of(SimpleMetarParser::MetarSpecials)
     m.specials.specials.should be_kind_of(Array)
     m.specials.specials.size.should == 1
+
+    #puts m.other.station
+    #puts m.other.station_auto
   end
 
   it "decode metar string (1)" do
