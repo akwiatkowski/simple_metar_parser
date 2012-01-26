@@ -27,7 +27,16 @@ parse metar string easily in any project.
   metar.wind.kmh => # speed of wind in km/h
   metar.wind.knots => # speed of wind in knots
 
+  # pressure
+  metar.pressure.hpa => # pressure in hPa
+  metar.pressure.hg_mm => # pressure in mm of Hg (menrcury)
+  metar.pressure.hg_inch => # pressure in inches of Hg (mercury)
 
+== Coming soon
+
+* more documentation
+* method to_s for all subclasses (Temperature, Wind, ...)
+* method to_s for Metar class creating full report of processed metar conditions
 
 == Contributing to simple_metar_parser
  

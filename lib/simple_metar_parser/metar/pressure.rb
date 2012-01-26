@@ -25,11 +25,27 @@ module SimpleMetarParser
     end
 
     def pressure_hg_mm
+      return nil if self.pressure.nil?
       (@pressure / HG_MM_TO_HPA).round
     end
 
     def pressure_hg_inch
       (@pressure / HG_INCH_TO_HPA).round
+    end
+
+    # Pressure in hPa
+    def hpa
+      self.pressure
+    end
+
+    # mm of Hg
+    def hg_mm
+      self.pressure_hg_mm
+    end
+
+    # inches of Hg
+    def hg_inch
+      self.pressure_hg_inch
     end
 
   end

@@ -71,9 +71,11 @@ describe "SimpleMetarParser::Metar" do
     m.temperature.wind_chill_us.should_not == nil
     m.temperature.degrees.should == -4
 
-
     m.pressure.should be_kind_of(SimpleMetarParser::Pressure)
     m.pressure.pressure.should == 1020
+    m.pressure.hpa.should == 1020
+    m.pressure.hg_mm.should_not == nil
+    m.pressure.hg_inch.should_not == nil
 
     m.visibility.should be_kind_of(SimpleMetarParser::Visibility)
     m.visibility.visibility.should == 1400
