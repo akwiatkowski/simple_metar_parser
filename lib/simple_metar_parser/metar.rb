@@ -105,5 +105,16 @@ module SimpleMetarParser
       self.time.time_to
     end
 
+    def valid?
+      if not self.temperature.nil? and not self.temperature.degrees.nil? and
+        not self.wind.nil? and
+        not self.time_from.nil?
+        return true
+      else
+        return false
+      end
+
+    end
+
   end
 end

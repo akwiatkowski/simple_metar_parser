@@ -1,14 +1,25 @@
 = simple_metar_parser
 
-There are two existing libraries for parsing metars:
+There are two existing libraries for parsing metars. They works very well but
+in some cases they don't match my needs.
 
 * ruby-wx - not supported, simple, but hard to maintain now for me;
 
 * metar-parser - too big and "railish", can fetch metars, but had some issues while parsing
   strings.
 
-... and there was some my piece of code used in HomeIO. This gem is that piece of code
-ready to use in your projects.
+I had some piece of my code used in HomeIO and created this gem for one purpose -
+parse metar string easily in any project.
+
+== How to use
+
+  metar_string = "KTTN 051853Z 04011KT 1/2SM VCTS SN FZFG BKN003 OVC010 M02/M02 A3006 RMK AO2 TSB40 SLP176 P0002 T10171017="
+  metar = SimpleMetarParser::Parser.parse(metar_string)
+
+  metar.wind.mps => # speed of wind in m/s
+  metar.wind.kmh => # speed of wind in km/h
+  metar.wind.knots => # speed of wind in knots
+
 
 
 == Contributing to simple_metar_parser

@@ -110,12 +110,29 @@ module SimpleMetarParser
 
     # Wind speed in knots
     def wind_speed_knots
+      return self.wind if self.wind.nil?
       return self.wind / KNOTS_TO_METERS_PER_SECOND
     end
 
     # Wind speed in KM/H
     def wind_speed_kmh
+      return self.wind if self.wind.nil?
       return self.wind / KILOMETERS_PER_HOUR_TO_METERS_PER_SECOND
+    end
+
+    # Meters per second
+    def mps
+      self.wind
+    end
+
+    # Kilometers per hour
+    def kmh
+      self.wind_speed_kmh
+    end
+
+    # Knots
+    def knots
+      self.wind_speed_knots
     end
 
   end

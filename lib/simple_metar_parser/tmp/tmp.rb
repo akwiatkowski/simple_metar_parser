@@ -13,9 +13,7 @@ def valid?
   elsif TYPE_FRESH == @type
     # time should be near now
     if not @city_metar.nil? and
-      not self.temperature.nil? and
-      not self.wind.nil? and
-      not self.time_from.nil? and
+
       self.time_from <= Time.now and
       self.time_from >= (Time.now - 3*24*3600)
       return true

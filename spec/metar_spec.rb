@@ -58,6 +58,8 @@ describe "SimpleMetarParser::Metar" do
     m.wind.wind_direction.should == 120
     m.wind.wind_speed.should == 3
     m.wind.wind_speed_kmh.should be_within(0.05).of(3 * 3.6)
+    m.wind.mps.should == 3
+    m.wind.kmh.should == be_within(0.05).of(3 * 3.6)
 
     m.temperature.should be_kind_of(SimpleMetarParser::Temperature)
     m.temperature.temperature.should == -4
@@ -84,7 +86,7 @@ describe "SimpleMetarParser::Metar" do
     #puts m.other.station_auto
   end
 
-  it "decode metar string (1)" do
+  it "decode metar string (2)" do
     # http://www.metarreader.com/
 
     metar_string = "KTTN 051853Z 04011KT 1/2SM VCTS SN FZFG BKN003 OVC010 M02/M02 A3006 RMK AO2 TSB40 SLP176 P0002 T10171017="

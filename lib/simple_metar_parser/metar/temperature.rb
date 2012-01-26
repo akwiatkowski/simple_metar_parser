@@ -93,6 +93,8 @@ module SimpleMetarParser
 
       @wind_chill = (10.0 * Math.sqrt(v) - v + 10.5)*(33.0 - ta)
     end
+
+    
   end
 
 end
