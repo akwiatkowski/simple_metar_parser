@@ -67,7 +67,10 @@ describe "SimpleMetarParser::Metar" do
     m.temperature.temperature.should == -4
     m.temperature.dew.should == -7
     m.temperature.humidity.should == 80
-    # m.temperature.wind_chill.should == -8 # ?
+    m.temperature.wind_chill.should_not == nil
+    m.temperature.wind_chill_us.should_not == nil
+    m.temperature.degrees.should == -4
+
 
     m.pressure.should be_kind_of(SimpleMetarParser::Pressure)
     m.pressure.pressure.should == 1020

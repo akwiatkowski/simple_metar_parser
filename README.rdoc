@@ -16,6 +16,12 @@ parse metar string easily in any project.
   metar_string = "KTTN 051853Z 04011KT 1/2SM VCTS SN FZFG BKN003 OVC010 M02/M02 A3006 RMK AO2 TSB40 SLP176 P0002 T10171017="
   metar = SimpleMetarParser::Parser.parse(metar_string)
 
+  # temperature
+  metar.wind.temperature.degrees => # C degrees of temperature
+  metar.wind.temperature.dew => # C degrees of dew point temperature
+  metar.wind.temperature.wind_chill => # wind chill index, original model
+  metar.wind.temperature.wind_chill_us => # wind chill index, North American model
+
   # wind
   metar.wind.mps => # speed of wind in m/s
   metar.wind.kmh => # speed of wind in km/h

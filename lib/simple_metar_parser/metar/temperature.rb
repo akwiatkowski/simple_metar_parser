@@ -10,6 +10,7 @@ module SimpleMetarParser
 
     # Temperature in C
     attr_reader :temperature
+    alias :degrees :temperature
 
     # Dew temperature
     attr_reader :dew
