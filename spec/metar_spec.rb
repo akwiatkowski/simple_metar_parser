@@ -59,7 +59,9 @@ describe "SimpleMetarParser::Metar" do
     m.wind.wind_speed.should == 3
     m.wind.wind_speed_kmh.should be_within(0.05).of(3 * 3.6)
     m.wind.mps.should == 3
-    m.wind.kmh.should == be_within(0.05).of(3 * 3.6)
+    m.wind.kmh.should be_within(0.05).of(3 * 3.6)
+    m.wind.knots.should_not == nil
+    m.wind.direction.should == 120
 
     m.temperature.should be_kind_of(SimpleMetarParser::Temperature)
     m.temperature.temperature.should == -4

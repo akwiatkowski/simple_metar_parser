@@ -16,6 +16,7 @@ parse metar string easily in any project.
   metar_string = "KTTN 051853Z 04011KT 1/2SM VCTS SN FZFG BKN003 OVC010 M02/M02 A3006 RMK AO2 TSB40 SLP176 P0002 T10171017="
   metar = SimpleMetarParser::Parser.parse(metar_string)
 
+  # wind
   metar.wind.mps => # speed of wind in m/s
   metar.wind.kmh => # speed of wind in km/h
   metar.wind.knots => # speed of wind in knots

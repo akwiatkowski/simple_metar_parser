@@ -135,5 +135,10 @@ module SimpleMetarParser
       self.wind_speed_knots
     end
 
+    # Wind direction
+    def direction
+      self.wind_direction
+    end
+
   end
 end
