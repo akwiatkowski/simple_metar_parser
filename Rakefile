@@ -51,3 +51,9 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
+
+desc "Run RSpec with code coverage"
+task :coverage do
+  `rake spec COVERAGE=true`
+  #`open coverage/index.html`
+end
