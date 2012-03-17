@@ -10,6 +10,7 @@ require 'metar/visibility'
 require 'metar/clouds'
 require 'metar/metar_specials'
 require 'metar/metar_other'
+require 'metar/runway'
 
 module SimpleMetarParser
   class Metar
@@ -36,7 +37,8 @@ module SimpleMetarParser
         :visibility => Visibility.new(self),
         :clouds => Clouds.new(self),
         :specials => MetarSpecials.new(self),
-        :other => MetarOther.new(self)
+        :other => MetarOther.new(self),
+        :runway => Runway.new(self)
       }
 
       # Create dynamically accessors

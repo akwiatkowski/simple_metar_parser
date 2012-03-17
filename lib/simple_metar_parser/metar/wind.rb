@@ -93,7 +93,8 @@ module SimpleMetarParser
 
     # Calculate wind parameters, some metar string has multiple winds recorded
     def recalculate_winds
-      @wind = @winds.collect { |w| w[:wind] }.inject(0) { |b, i| b + i } / @winds.size
+      wind_sum = @winds.collect { |w| w[:wind] }.inject(0) { |b, i| b + i }
+      @wind = wind_sum.to_f / @winds.size
       if @winds.size == 1
         @wind_direction = @winds.first[:wind_direction]
       else

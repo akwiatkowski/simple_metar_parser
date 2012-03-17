@@ -8,6 +8,11 @@ describe "SimpleMetarParser::Metar" do
     m.raw.should == sample_metar
   end
 
+  it "should hold up with empty string and be invalid" do
+    m = SimpleMetarParser::Parser.parse('')
+    m.valid?.should_not
+  end
+
   it "should get city information using fake AR class" do
     # fake class
     class FakeCity
@@ -142,6 +147,18 @@ describe "SimpleMetarParser::Metar" do
 
     snow_normal.should > snow_light
     snow_heavy.should > snow_normal
+  end
+
+  it "parse runway information" do
+    metar_string = "LBBG 041600Z 12003MPS 310V290 1400 R04/P1500N R22/P1500U +SN BKN022 OVC050 M04/M07 Q1020 NOSIG 9949//91="
+    m = SimpleMetarParser::Parser.parse(metar_string)
+    m.runway.runways.should be_kind_of(Array)
+    m.runway.runways.size.should == 2
+
+    m.runway.runways.should =~ [
+      {:runway => '04', :visual_range => 1_500},
+      {:runway => '22', :visual_range => 1_500, :change => :up}
+    ]
 
   end
 
